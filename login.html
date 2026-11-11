@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loja - Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <h1>Loja</h1>
+            <nav>
+                <a href="index.html">Início</a>
+                <a href="sobre.html">Sobre</a>
+                <a href="contato.html">Contato</a>
+                <a href="carrinho.html" id="link-carrinho">Carrinho (0)</a>
+                <a href="login.html" id="link-login">Entrar</a>
+                <a href="admin.html" id="link-admin" style="display: none;">Admin</a>
+                <button id="btn-sair" style="display: none;" onclick="fazerLogout()">Sair</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="auth-main">
+        <section class="auth-card" aria-labelledby="auth-title">
+            <p class="auth-eyebrow">BLRSTORE</p>
+            <h2 id="auth-title">Boas-vindas!</h2>
+            <p class="auth-intro" id="auth-intro">Entre para continuar suas compras.</p>
+
+            <div class="auth-tabs" role="group" aria-label="Escolha uma opção">
+                <button type="button" class="auth-tab active" id="tab-login" aria-pressed="true">Entrar</button>
+                <button type="button" class="auth-tab" id="tab-cadastro" aria-pressed="false">Criar conta</button>
+            </div>
+
+            <form id="form-auth" class="auth-form">
+                <div class="auth-field" id="campo-nome" hidden>
+                    <label for="nome">Seu nome</label>
+                    <input type="text" id="nome" name="name" placeholder="Como podemos chamar você?" autocomplete="name" disabled>
+                </div>
+                <div class="auth-field">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" name="email" placeholder="voce@email.com" autocomplete="email" required>
+                </div>
+                <div class="auth-field">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="password" placeholder="Digite sua senha" autocomplete="current-password" required>
+                </div>
+                <div class="auth-field" id="campo-confirmar-senha" hidden>
+                    <label for="confirmar-senha">Confirme sua senha</label>
+                    <input type="password" id="confirmar-senha" name="confirm-password" placeholder="Digite a senha novamente" autocomplete="new-password" disabled>
+                </div>
+                <p class="auth-message" id="auth-message" role="status" aria-live="polite"></p>
+                <button type="submit" class="btn-acao" id="btn-enviar">Entrar</button>
+            </form>
+
+            <p class="auth-switch" id="auth-switch">Ainda não tem uma conta? <button type="button" id="link-auth-cadastro">Criar conta</button></p>
+        </section>
+    </main>
+
+    <footer><p>&copy; 2026 Loja. Todos os direitos reservados.</p></footer>
+    <script src="app.js"></script>
+    <script>
+        let acaoAtual = 'login';
+        const formAuth = document.getElementById('form-auth');
+        const campoNome = document.getElementById('campo-nome');
+        const campoConfirmarSenha = document.getElementById('campo-confirmar-senha');
+        const nomeInput = document.getElementById('nome');
+        const senhaInput = document.getElementById('senha');
+        const confirmarSenhaInput = document.getElementById('confirmar-senha');
+        const mensagemAuth = document.getElementById('auth-message');
+
+        function setAcao(acao) {
+            acaoAtual = acao;
+            const cadastro = acao === 'cadastro';
+            campoNome.hidden = !cadastro;
+            campoConfirmarSenha.hidden = !cadastro;
+            nomeInput.disabled = !cadastro;
+            nomeInput.required = cadastro;
+            confirmarSenhaInput.disabled = !cadastro;
+            confirmarSenhaInput.required = cadastro;
+            senhaInput.autocomplete = cadastro ? 'new-password' : 'current-password';
+            document.getElementById('auth-title').textContent = cadastro ? 'Crie sua conta' : 'Boas-vindas!';
+            document.getElementById('auth-intro').textContent = cadastro
+                ? 'Preencha seus dados para começar a comprar.'
+                : 'Entre para continuar suas compras.';
+            document.getElementById('btn-enviar').textContent = cadastro ? 'Criar minha conta' : 'Entrar';
+            document.getElementById('auth-switch').innerHTML = cadastro
+                ? 'Já tem uma conta? <button type="button" id="link-auth-login">Entrar</button>'
+                : 'Ainda não tem uma conta? <button type="button" id="link-auth-cadastro">Criar conta</button>';
+            document.getElementById('tab-login').classList.toggle('active', !cadastro);
+            document.getElementById('tab-cadastro').classList.toggle('active', cadastro);
+            document.getElementById('tab-login').setAttribute('aria-pressed', String(!cadastro));
+            document.getElementById('tab-cadastro').setAttribute('aria-pressed', String(cadastro));
+            mensagemAuth.textContent = '';
+            mensagemAuth.classList.remove('error', 'success');
+        }
+
+        document.getElementById('tab-login').addEventListener('click', () => setAcao('login'));
+        document.getElementById('tab-cadastro').addEventListener('click', () => setAcao('cadastro'));
+        document.getElementById('auth-switch').addEventListener('click', (event) => {
+            if (event.target.id === 'link-auth-cadastro') setAcao('cadastro');
+            if (event.target.id === 'link-auth-login') setAcao('login');
+        });
+
+        formAuth.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            const senha = senhaInput.value;
+
+            if (acaoAtual === 'cadastro') {
+                if (!nomeInput.value.trim()) {
+                    mensagemAuth.textContent = 'Informe seu nome para continuar.';
+                    mensagemAuth.className = 'auth-message error';
+                    return;
+                }
+                if (senha.length < 8) {
+                    mensagemAuth.textContent = 'Escolha uma senha com pelo menos 8 caracteres.';
+                    mensagemAuth.className = 'auth-message error';
+                    return;
+                }
+                if (senha !== confirmarSenhaInput.value) {
+                    mensagemAuth.textContent = 'As senhas não conferem. Verifique e tente novamente.';
+                    mensagemAuth.className = 'auth-message error';
+                    return;
+                }
+
+                const usuarios = MockDB.obterTabela('usuarios');
+                if (usuarios.some(usuario => usuario.email.toLowerCase() === email)) {
+                    mensagemAuth.textContent = 'Este e-mail já possui uma conta. Entre ou use outro e-mail.';
+                    mensagemAuth.className = 'auth-message error';
+                    return;
+                }
+
+                // Simula: INSERT INTO usuarios
+                MockDB.inserir('usuarios', { nome: nomeInput.value.trim(), email, senha });
+                setAcao('login');
+                formAuth.reset();
+                document.getElementById('email').value = email;
+                mensagemAuth.textContent = 'Conta criada com sucesso! Agora você já pode entrar.';
+                mensagemAuth.classList.add('success');
+            } else {
+                // Simula validação de login (aceita o admin diretamente por conveniência didática)
+                const usuarios = MockDB.obterTabela('usuarios');
+                const existe = usuarios.find(u => u.email.toLowerCase() === email && u.senha === senha);
+               
+                if (existe || email === EMAIL_ADMIN) {
+                    sessionStorage.setItem('usuarioLogado', JSON.stringify({ email }));
+                    window.location.href = 'index.html';
+                } else {
+                    mensagemAuth.textContent = 'E-mail ou senha incorretos. Confira seus dados e tente novamente.';
+                    mensagemAuth.className = 'auth-message error';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
