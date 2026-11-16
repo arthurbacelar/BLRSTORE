@@ -6,7 +6,7 @@ const IMG_TENIS_BMW = 'file:///C:/Users/CRC/AppData/Roaming/Code/agentSessionDat
 const PRODUTO_JAQUETA_DESTAQUE = {
     descricao: 'Jaqueta Bmw Motorsport Mt7 Puma',
     preco: 394.90,
-    medida: 'unidade',
+    medida: ['P', 'M', 'G', 'GG'],
     imagem_url: './jaqueta.jpg',
     destaque: true
 };
@@ -135,6 +135,10 @@ function atualizarContadorCarrinho() {
     const totalItens = carrinho.reduce((acc, item) => acc + item.quantidade, 0);
     const link = document.getElementById('link-carrinho');
     if(link) link.textContent = `Carrinho (${totalItens})`;
+}
+
+function formatarMedida(medida) {
+    return Array.isArray(medida) ? medida.join(', ') : medida;
 }
 
 function adicionarAoCarrinho(id, descricao, preco, medida, imagem_url) {

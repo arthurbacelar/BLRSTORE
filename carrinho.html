@@ -47,13 +47,14 @@
 
             lista.innerHTML = carrinho.map(item => {
                 total += (item.preco * item.quantidade);
+                const medidaTexto = Array.isArray(item.medida) ? item.medida.join(', ') : item.medida;
                 return `
                     <div class="item-carrinho">
                         <div style="display: flex; gap: 15px; align-items: center;">
                             <img src="${item.imagem_url}" onerror="this.src='./jaqueta.jpg'">
                             <div>
                                 <h3>${item.descricao}</h3>
-                                <p>Qtd: ${item.quantidade} x ${item.medida}</p>
+                                <p>Qtd: ${item.quantidade} x ${medidaTexto}</p>
                             </div>
                         </div>
                         <div class="preco" style="margin: 0;">R$ ${(item.preco * item.quantidade).toFixed(2)}</div>

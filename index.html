@@ -39,15 +39,20 @@
                 return;
             }
 
-            grid.innerHTML = dados.map(p => `
-                <div class="card">
-                    <img src="${p.imagem_url}" alt="${p.descricao}" onerror="this.src='./jaqueta.jpg'">
-                    <h2>${p.descricao}</h2>
-                    <p>Medida: 1 ${p.medida}</p>
-                    <div class="preco">R$ ${p.preco.toFixed(2)}</div>
-                    <button class="btn-acao" onclick="adicionarAoCarrinho('${p.id}', '${p.descricao}', ${p.preco}, '${p.medida}', '${p.imagem_url}')">Adicionar</button>
-                </div>
-            `).join('');
+            grid.innerHTML = dados.map(p => {
+                const medidaTexto = formatarMedida(p.medida);
+                const textoMedida = Array.isArray(p.medida) ? `Tamanhos: ${medidaTexto}` : `Medida: 1 ${medidaTexto}`;
+
+                return `
+                    <div class="card">
+                        <img src="${p.imagem_url}" alt="${p.descricao}" onerror="this.src='./jaqueta.jpg'">
+                        <h2>${p.descricao}</h2>
+                        <p>${textoMedida}</p>
+                        <div class="preco">R$ ${p.preco.toFixed(2)}</div>
+                        <button class="btn-acao" onclick="adicionarAoCarrinho('${p.id}', '${p.descricao}', ${p.preco}, '${Array.isArray(p.medida) ? p.medida.join(',') : p.medida}', '${p.imagem_url}')">Adicionar</button>
+                    </div>
+                `;
+            }).join('');
         }
 
         function carregarDestaques() {
