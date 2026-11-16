@@ -1,6 +1,37 @@
 
 const EMAIL_ADMIN = 'admin@loja.com'; // Credencial estática de administrador
 
+const PRODUTOS_INICIAIS = [
+    {
+        descricao: 'Jaqueta Bmw Motorsport Mt7 Puma',
+        preco: 394.90,
+        medida: 'unidade',
+        imagem_url: './jaqueta.jpg',
+        destaque: true
+    },
+    {
+        descricao: 'Camisa básica',
+        preco: 89.90,
+        medida: 'unidade',
+        imagem_url: './jaqueta.jpg',
+        destaque: false
+    },
+    {
+        descricao: 'Calça de moletom',
+        preco: 149.90,
+        medida: 'unidade',
+        imagem_url: './jaqueta.jpg',
+        destaque: false
+    },
+    {
+        descricao: 'Tênis esportivo',
+        preco: 239.90,
+        medida: 'par',
+        imagem_url: './jaqueta.jpg',
+        destaque: false
+    }
+];
+
 // ==========================================
 // 1. SIMULADOR DE BANCO DE DADOS RELACIONAL
 // ==========================================
@@ -32,6 +63,21 @@ const MockDB = {
         return tabela.filter(filtroCallback);
     }
 };
+
+function inicializarProdutosPadrao() {
+    const produtos = MockDB.obterTabela('produtos');
+
+    if (produtos.length === 0) {
+        PRODUTOS_INICIAIS.forEach(produto => MockDB.inserir('produtos', produto));
+        return;
+    }
+
+    const existeDestaque = produtos.some(produto => produto.destaque === true);
+    if (!existeDestaque && produtos.length > 0) {
+        produtos[0].destaque = true;
+        MockDB.salvarTabela('produtos', produtos);
+    }
+}
 
 // ==========================================
 // 2. AUTENTICAÇÃO SIMULADA
@@ -80,6 +126,7 @@ function adicionarAoCarrinho(id, descricao, preco, medida, imagem_url) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    inicializarProdutosPadrao();
     verificarSessao();
     atualizarContadorCarrinho();
 });

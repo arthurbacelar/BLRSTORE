@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loja - Admin</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <h1>Loja</h1>
+            <nav>
+                <a href="index.html">Início</a>
+                <a href="sobre.html">Sobre</a>
+                <a href="contato.html">Contato</a>
+                <a href="carrinho.html" id="link-carrinho">Carrinho (0)</a>
+                <a href="login.html" id="link-login">Entrar</a>
+                <a href="admin.html" id="link-admin" style="display: none;">Admin</a>
+                <button id="btn-sair" style="display: none;" onclick="fazerLogout()">Sair</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <section class="admin-header">
+            <p class="eyebrow">Painel administrativo</p>
+            <h2>Destaque da semana</h2>
+            <p>Escolha o produto que será exibido como principal na página inicial da loja.</p>
+        </section>
+
+        <section class="admin-grid">
+            <article class="admin-card">
+                <h3>Produto em destaque</h3>
+                <div id="destaque-atual"></div>
+            </article>
+
+            <article class="admin-card">
+                <h3>Lista de produtos</h3>
+                <div id="lista-produtos" class="lista-produtos"></div>
+            </article>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Loja. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="app.js"></script>
+    <script>
+        function verificarAcessoAdmin() {
+            const usuarioLogado = JSON.parse(sessionStorage.getItem('usuarioLogado'));
+            if (!usuarioLogado || usuarioLogado.email !== EMAIL_ADMIN) {
+                alert('Acesso restrito ao administrador. Faça login como admin para continuar.');
+                window.location.href = 'login.html';
+                return;
+            }
+        }
+
+        function renderDestaqueAtual() {
+            const destaque = MockDB.selecionar('produtos', produto => produto.destaque === true)[0];
+            const container = document.getElementById('destaque-atual');
+
+            if (!destaque) {
+                container.innerHTML = '<p>Nenhum produto marcado como destaque da semana.</p>';
+                return;
+            }
+
+            const precoTexto = `R$ ${Number(destaque.preco).toFixed(2)}`;
+            container.innerHTML = `
+                <div class="destaque-container">
+                    <img src="${destaque.imagem_url}" alt="${destaque.descricao}" onerror="this.src='./jaqueta.jpg'">
+                    <div class="destaque-info">
+                        <span class="tag-destaque">Em destaque</span>
+                        <h4>${destaque.descricao}</h4>
+                        <p>Medida: 1 ${destaque.medida}</p>
+                        <p class="preco">${precoTexto}</p>
+                        <button class="btn-acao" type="button" onclick="removerDestaqueSemanal()">Remover destaque</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderListaProdutos() {
+            const lista = document.getElementById('lista-produtos');
+            const produtos = MockDB.selecionar('produtos');
+
+            if (!produtos.length) {
+                lista.innerHTML = '<p>Nenhum produto cadastrado.</p>';
+                return;
+            }
+
+            lista.innerHTML = produtos.map(produto => `
+                <div class="produto-admin-item">
+                    <img src="${produto.imagem_url}" alt="${produto.descricao}" onerror="this.src='./jaqueta.jpg'">
+                    <div class="info">
+                        <h4>${produto.descricao}</h4>
+                        <p>R$ ${Number(produto.preco).toFixed(2)} · ${produto.medida}</p>
+                    </div>
+                    <button class="botao-destaque ${produto.destaque ? 'ativo' : ''}" type="button" data-produto-id="${produto.id}" data-destaque="${produto.destaque ? 'true' : 'false'}">
+                        ${produto.destaque ? 'Destaque ativo' : 'Marcar destaque'}
+                    </button>
+                </div>
+            `).join('');
+
+            document.querySelectorAll('[data-produto-id]').forEach(botao => {
+                botao.addEventListener('click', () => {
+                    atualizarDestaqueSemanal(botao.dataset.produtoId);
+                });
+            });
+        }
+
+        function atualizarDestaqueSemanal(produtoId) {
+            const produtos = MockDB.selecionar('produtos');
+            produtos.forEach(produto => {
+                produto.destaque = produto.id === produtoId;
+            });
+
+            MockDB.salvarTabela('produtos', produtos);
+            renderDestaqueAtual();
+            renderListaProdutos();
+        }
+
+        function removerDestaqueSemanal() {
+            const produtos = MockDB.selecionar('produtos');
+            produtos.forEach(produto => {
+                produto.destaque = false;
+            });
+
+            MockDB.salvarTabela('produtos', produtos);
+            renderDestaqueAtual();
+            renderListaProdutos();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            verificarAcessoAdmin();
+            inicializarProdutosPadrao();
+            renderDestaqueAtual();
+            renderListaProdutos();
+            verificarSessao();
+        });
+    </script>
+</body>
+</html>
+

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -14,7 +14,7 @@
         <div class="header-container">
             <h1>Loja</h1>
             <nav>
-                <a href="index.html">Início</a>
+                <a href="index.html">InÃ­cio</a>
                 <a href="sobre.html">Sobre</a>
                 <a href="contato.html">Contato</a>
                 <a href="carrinho.html" id="link-carrinho">Carrinho (0)</a>
@@ -40,7 +40,7 @@
             let total = 0;
 
             if (carrinho.length === 0) {
-                lista.innerHTML = "<p>O carrinho está vazio.</p>";
+                lista.innerHTML = "<p>O carrinho estÃ¡ vazio.</p>";
                 document.getElementById('total-carrinho').innerHTML = "";
                 return;
             }
@@ -50,7 +50,7 @@
                 return `
                     <div class="item-carrinho">
                         <div style="display: flex; gap: 15px; align-items: center;">
-                            <img src="${item.imagem_url}" onerror="this.src='./img/produto-padrao.png'">
+                            <img src="${item.imagem_url}" onerror="this.src='./jaqueta.jpg'">
                             <div>
                                 <h3>${item.descricao}</h3>
                                 <p>Qtd: ${item.quantidade} x ${item.medida}</p>
@@ -67,7 +67,7 @@
         function finalizarPedido() {
             const usuarioLogado = JSON.parse(sessionStorage.getItem('usuarioLogado'));
             if (!usuarioLogado) {
-                alert('Faça login ou cadastre-se para solicitar seu pedido.');
+                alert('FaÃ§a login ou cadastre-se para solicitar seu pedido.');
                 window.location.href = 'login.html';
                 return;
             }
@@ -87,7 +87,7 @@
 
             emailjs.send("SEU_SERVICE_ID", "SEU_TEMPLATE_ID", params)
                 .then(() => {
-                    alert('Pedido enviado ao administrador! O banco de dados simulado no navegador não foi alterado.');
+                    alert('Pedido enviado ao administrador! O banco de dados simulado no navegador nÃ£o foi alterado.');
                     localStorage.removeItem('carrinhoLoja');
                     window.location.href = 'index.html';
                 })
@@ -103,3 +103,4 @@
     </script>
 </body>
 </html>
+
