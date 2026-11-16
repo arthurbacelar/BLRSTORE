@@ -45,7 +45,7 @@
                 return;
             }
 
-            lista.innerHTML = carrinho.map(item => {
+            lista.innerHTML = carrinho.map((item, index) => {
                 total += (item.preco * item.quantidade);
                 const medidaTexto = Array.isArray(item.medida) ? item.medida.join(', ') : item.medida;
                 return `
@@ -57,12 +57,22 @@
                                 <p>Qtd: ${item.quantidade} x ${medidaTexto}</p>
                             </div>
                         </div>
-                        <div class="preco" style="margin: 0;">R$ ${(item.preco * item.quantidade).toFixed(2)}</div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div class="preco" style="margin: 0;">R$ ${(item.preco * item.quantidade).toFixed(2)}</div>
+                            <button class="btn-acao" type="button" style="width: auto; padding: 8px 14px; background: #a64d3d;" onclick="removerItemCarrinho(${index})">Excluir</button>
+                        </div>
                     </div>
                 `;
             }).join('');
 
             document.getElementById('total-carrinho').innerHTML = `<strong>Total: R$ ${total.toFixed(2)}</strong>`;
+        }
+
+        function removerItemCarrinho(index) {
+            carrinho.splice(index, 1);
+            localStorage.setItem('carrinhoLoja', JSON.stringify(carrinho));
+            atualizarContadorCarrinho();
+            renderizarCarrinho();
         }
 
         function finalizarPedido() {
