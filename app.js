@@ -13,7 +13,7 @@ const PRODUTO_JAQUETA_DESTAQUE = {
 
 const PRODUTO_TENIS_DESTAQUE = {
     descricao: 'Tênis BMW Motorsport',
-    preco: 399.90,
+    preco: 799.99,
     medida: 'par',
     imagem_url: IMG_TENIS_BMW,
     destaque: true
