@@ -24,6 +24,27 @@ main { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; flex: 1; width: 10
 .preco { font-size: 1.4rem; font-weight: bold; color: var(--accent); margin-bottom: 1rem; }
 button.btn-acao { background: var(--accent); color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 1rem; }
 button.btn-acao:hover { background: #9f5d4c; }
+#toast-carrinho {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 9999;
+    background: rgba(47, 66, 75, 0.95);
+    color: #fff;
+    padding: 0.9rem 1.2rem;
+    border-radius: 999px;
+    box-shadow: 0 14px 28px rgba(37, 46, 53, 0.25);
+    font-weight: 600;
+    font-size: 0.95rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+}
+#toast-carrinho.show {
+    opacity: 1;
+    transform: translateY(0);
+}
 form { background: white; padding: 20px; border-radius: 8px; max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
 input, select { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
 .auth-main { display: flex; align-items: center; justify-content: center; }

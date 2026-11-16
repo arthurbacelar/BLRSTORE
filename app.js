@@ -141,6 +141,26 @@ function formatarMedida(medida) {
     return Array.isArray(medida) ? medida.join(', ') : medida;
 }
 
+function mostrarToast(mensagem) {
+    let toast = document.getElementById('toast-carrinho');
+
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast-carrinho';
+        document.body.appendChild(toast);
+    }
+
+    toast.textContent = mensagem;
+    toast.classList.remove('show');
+    void toast.offsetWidth;
+    toast.classList.add('show');
+
+    clearTimeout(toast.timer);
+    toast.timer = setTimeout(() => {
+        toast.classList.remove('show');
+    }, 2200);
+}
+
 function adicionarAoCarrinho(id, descricao, preco, medida, imagem_url) {
     const itemExistente = carrinho.find(item => item.id === id);
     if (itemExistente) {
@@ -150,7 +170,7 @@ function adicionarAoCarrinho(id, descricao, preco, medida, imagem_url) {
     }
     localStorage.setItem('carrinhoLoja', JSON.stringify(carrinho));
     atualizarContadorCarrinho();
-    alert('Produto adicionado ao carrinho!');
+    mostrarToast('Produto adicionado ao carrinho!');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
