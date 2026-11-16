@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loja - Inicio</title>
+    <title>BCLR - Inicio</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
         <div class="header-container">
-            <h1>Loja</h1>
+            <h1>BCLR</h1>
             <nav>
                 <a href="index.html">inicio</a>
                 <a href="sobre.html">Sobre</a>
@@ -41,18 +41,42 @@
 
             grid.innerHTML = dados.map(p => {
                 const medidaTexto = formatarMedida(p.medida);
-                const textoMedida = Array.isArray(p.medida) ? `Tamanhos: ${medidaTexto}` : `Medida: 1 ${medidaTexto}`;
+                const opcoesTamanho = Array.isArray(p.medida)
+                    ? `<div class="seletor-tamanhos" aria-label="Escolha o tamanho">${p.medida.map(tamanho => `<button class="botao-tamanho" type="button" onclick="selecionarTamanho(this)">${tamanho}</button>`).join('')}</div>`
+                    : `<p>Medida: 1 ${medidaTexto}</p>`;
 
                 return `
                     <div class="card">
-                        <img src="${p.imagem_url}" alt="${p.descricao}" onerror="this.src='./jaqueta.jpg'">
+                        <img class="${p.descricao === 'Tênis BMW Motorsport' ? 'imagem-completa' : ''}" src="${p.imagem_url}" alt="${p.descricao}" onerror="this.src='./jaqueta.jpg'">
                         <h2>${p.descricao}</h2>
-                        <p>${textoMedida}</p>
+                        ${Array.isArray(p.medida) ? `<p>Escolha o tamanho:</p>${opcoesTamanho}` : opcoesTamanho}
                         <div class="preco">R$ ${p.preco.toFixed(2)}</div>
-                        <button class="btn-acao" onclick="adicionarAoCarrinho('${p.id}', '${p.descricao}', ${p.preco}, '${Array.isArray(p.medida) ? p.medida.join(',') : p.medida}', '${p.imagem_url}')">Adicionar</button>
+                        <button class="btn-acao" onclick="adicionarProdutoDoCard(this)" data-produto-id="${p.id}">Adicionar</button>
                     </div>
                 `;
             }).join('');
+        }
+
+        function selecionarTamanho(botao) {
+            const seletor = botao.closest('.seletor-tamanhos');
+            seletor.querySelectorAll('.botao-tamanho').forEach(opcao => {
+                opcao.classList.toggle('selecionado', opcao === botao);
+                opcao.setAttribute('aria-pressed', opcao === botao ? 'true' : 'false');
+            });
+        }
+
+        function adicionarProdutoDoCard(botao) {
+            const produto = MockDB.selecionar('produtos', p => p.id === botao.dataset.produtoId)[0];
+            const seletor = botao.closest('.card').querySelector('.seletor-tamanhos');
+            const opcaoSelecionada = seletor && seletor.querySelector('.botao-tamanho.selecionado');
+
+            if (Array.isArray(produto.medida) && !opcaoSelecionada) {
+                alert('Escolha um tamanho para a jaqueta.');
+                return;
+            }
+
+            const medida = opcaoSelecionada ? opcaoSelecionada.textContent : produto.medida;
+            adicionarAoCarrinho(produto.id, produto.descricao, produto.preco, medida, produto.imagem_url);
         }
 
         function carregarDestaques() {

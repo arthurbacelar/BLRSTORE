@@ -12,7 +12,7 @@
 <body>
     <header>
         <div class="header-container">
-            <h1>Loja</h1>
+            <h1>BCLR</h1>
             <nav>
                 <a href="index.html">Inicio</a>
                 <a href="sobre.html">Sobre</a>
@@ -54,7 +54,10 @@
                             <img src="${item.imagem_url}" onerror="this.src='./jaqueta.jpg'">
                             <div>
                                 <h3>${item.descricao}</h3>
-                                <p>Qtd: ${item.quantidade} x ${medidaTexto}</p>
+                                <p>Qtd: ${item.quantidade}</p>
+                                ${item.descricao === 'Jaqueta Bmw Motorsport Mt7 Puma'
+                                    ? `<p>Tamanho escolhido: ${medidaTexto}</p>`
+                                    : `<p>Medida: ${medidaTexto}</p>`}
                             </div>
                         </div>
                         <div style="display: flex; align-items: center; gap: 12px;">
@@ -88,7 +91,7 @@
             btn.textContent = "Enviando...";
             btn.disabled = true;
 
-            let resumo = carrinho.map(i => `${i.quantidade}x ${i.descricao} (${i.medida}) - R$ ${(i.preco * i.quantidade).toFixed(2)}`).join('\n');
+            let resumo = carrinho.map(i => `${i.quantidade}x ${i.descricao} (${Array.isArray(i.medida) ? i.medida.join(', ') : i.medida}) - R$ ${(i.preco * i.quantidade).toFixed(2)}`).join('\n');
            
             const params = {
                 usuario_email: usuarioLogado.email,

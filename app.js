@@ -78,7 +78,7 @@ const MockDB = {
 };
 
 function inicializarProdutosPadrao() {
-    const produtos = MockDB.obterTabela('produtos');
+    let produtos = MockDB.obterTabela('produtos');
 
     if (produtos.length === 0) {
         PRODUTOS_INICIAIS.forEach(produto => MockDB.inserir('produtos', produto));
@@ -95,12 +95,19 @@ function inicializarProdutosPadrao() {
         MockDB.inserir('produtos', { ...PRODUTO_TENIS_DESTAQUE });
     }
 
-    const destaquesAtivos = MockDB.obterTabela('produtos').filter(produto => produto.destaque === true);
+    produtos = MockDB.obterTabela('produtos');
+    produtos.forEach(produto => {
+        if (produto.descricao === PRODUTO_JAQUETA_DESTAQUE.descricao) {
+            produto.medida = [...PRODUTO_JAQUETA_DESTAQUE.medida];
+        }
+    });
+
+    const destaquesAtivos = produtos.filter(produto => produto.destaque === true);
     if (destaquesAtivos.length === 0 && produtos.length > 0) {
-        const dadosAtualizados = MockDB.obterTabela('produtos');
-        dadosAtualizados[0].destaque = true;
-        MockDB.salvarTabela('produtos', dadosAtualizados);
+        produtos[0].destaque = true;
     }
+
+    MockDB.salvarTabela('produtos', produtos);
 }
 
 // ==========================================
@@ -162,7 +169,9 @@ function mostrarToast(mensagem) {
 }
 
 function adicionarAoCarrinho(id, descricao, preco, medida, imagem_url) {
-    const itemExistente = carrinho.find(item => item.id === id);
+    const itemExistente = carrinho.find(item =>
+        item.id === id && formatarMedida(item.medida) === formatarMedida(medida)
+    );
     if (itemExistente) {
         itemExistente.quantidade += 1;
     } else {
