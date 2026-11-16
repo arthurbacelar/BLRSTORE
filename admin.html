@@ -58,27 +58,30 @@
         }
 
         function renderDestaqueAtual() {
-            const destaque = MockDB.selecionar('produtos', produto => produto.destaque === true)[0];
+            const destaques = MockDB.selecionar('produtos', produto => produto.destaque === true);
             const container = document.getElementById('destaque-atual');
 
-            if (!destaque) {
+            if (!destaques.length) {
                 container.innerHTML = '<p>Nenhum produto marcado como destaque da semana.</p>';
                 return;
             }
 
-            const precoTexto = `R$ ${Number(destaque.preco).toFixed(2)}`;
-            container.innerHTML = `
-                <div class="destaque-container">
-                    <img src="${destaque.imagem_url}" alt="${destaque.descricao}" onerror="this.src='./jaqueta.jpg'">
-                    <div class="destaque-info">
-                        <span class="tag-destaque">Em destaque</span>
-                        <h4>${destaque.descricao}</h4>
-                        <p>Medida: 1 ${destaque.medida}</p>
-                        <p class="preco">${precoTexto}</p>
-                        <button class="btn-acao" type="button" onclick="removerDestaqueSemanal()">Remover destaque</button>
+            container.innerHTML = destaques.map(destaque => {
+                const precoTexto = `R$ ${Number(destaque.preco).toFixed(2)}`;
+                return `
+                    <div class="destaque-container" style="margin-bottom: 1rem;">
+                        <img src="${destaque.imagem_url}" alt="${destaque.descricao}" onerror="this.src='./jaqueta.jpg'">
+                        <div class="destaque-info">
+                            <span class="tag-destaque">Em destaque</span>
+                            <h4>${destaque.descricao}</h4>
+                            <p>Medida: 1 ${destaque.medida}</p>
+                            <p class="preco">${precoTexto}</p>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            }).join('');
+
+            container.insertAdjacentHTML('beforeend', '<button class="btn-acao" type="button" onclick="removerDestaqueSemanal()">Remover destaques</button>');
         }
 
         function renderListaProdutos() {

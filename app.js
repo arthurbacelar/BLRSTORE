@@ -12,6 +12,13 @@ const PRODUTO_JAQUETA_DESTAQUE = {
 const PRODUTOS_INICIAIS = [
     { ...PRODUTO_JAQUETA_DESTAQUE },
     {
+        descricao: 'Jaqueta Bmw Motorsport Mt7 Puma',
+        preco: 394.90,
+        medida: 'unidade',
+        imagem_url: './jaqueta.jpg',
+        destaque: true
+    },
+    {
         descricao: 'Camisa básica',
         preco: 89.90,
         medida: 'unidade',
@@ -74,21 +81,20 @@ function inicializarProdutosPadrao() {
         return;
     }
 
-    const produtoDestaque = produtos[0];
-    if (produtoDestaque && (
-        produtoDestaque.descricao !== PRODUTO_JAQUETA_DESTAQUE.descricao ||
-        Number(produtoDestaque.preco) !== PRODUTO_JAQUETA_DESTAQUE.preco
-    )) {
-        produtos[0] = {
-            ...produtoDestaque,
-            ...PRODUTO_JAQUETA_DESTAQUE,
-            id: produtoDestaque.id || produtoDestaque._id
-        };
+    const produtosJaqueta = produtos.filter(produto => produto.descricao === PRODUTO_JAQUETA_DESTAQUE.descricao);
+    if (produtosJaqueta.length > 0) {
+        produtosJaqueta.forEach(produto => {
+            produto.descricao = PRODUTO_JAQUETA_DESTAQUE.descricao;
+            produto.preco = PRODUTO_JAQUETA_DESTAQUE.preco;
+            produto.medida = PRODUTO_JAQUETA_DESTAQUE.medida;
+            produto.imagem_url = PRODUTO_JAQUETA_DESTAQUE.imagem_url;
+            produto.destaque = true;
+        });
         MockDB.salvarTabela('produtos', produtos);
     }
 
-    const existeDestaque = produtos.some(produto => produto.destaque === true);
-    if (!existeDestaque && produtos.length > 0) {
+    const destaquesAtivos = produtos.filter(produto => produto.destaque === true);
+    if (destaquesAtivos.length === 0 && produtos.length > 0) {
         produtos[0].destaque = true;
         MockDB.salvarTabela('produtos', produtos);
     }
