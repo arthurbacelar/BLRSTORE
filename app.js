@@ -1,6 +1,8 @@
 
 const EMAIL_ADMIN = 'admin@loja.com'; // Credencial estática de administrador
 
+const IMG_TENIS_BMW = 'file:///C:/Users/CRC/AppData/Roaming/Code/agentSessionData/9277e50c-5919-4bb6-880c-967ef3d16831/attachments/a1c087cd-333b-4d08-b550-0fad9ed16a7c/Pasted%20Image.png';
+
 const PRODUTO_JAQUETA_DESTAQUE = {
     descricao: 'Jaqueta Bmw Motorsport Mt7 Puma',
     preco: 394.90,
@@ -9,15 +11,17 @@ const PRODUTO_JAQUETA_DESTAQUE = {
     destaque: true
 };
 
+const PRODUTO_TENIS_DESTAQUE = {
+    descricao: 'Tênis BMW Motorsport',
+    preco: 399.90,
+    medida: 'par',
+    imagem_url: IMG_TENIS_BMW,
+    destaque: true
+};
+
 const PRODUTOS_INICIAIS = [
     { ...PRODUTO_JAQUETA_DESTAQUE },
-    {
-        descricao: 'Jaqueta Bmw Motorsport Mt7 Puma',
-        preco: 394.90,
-        medida: 'unidade',
-        imagem_url: './jaqueta.jpg',
-        destaque: true
-    },
+    { ...PRODUTO_TENIS_DESTAQUE },
     {
         descricao: 'Camisa básica',
         preco: 89.90,
@@ -81,22 +85,21 @@ function inicializarProdutosPadrao() {
         return;
     }
 
-    const produtosJaqueta = produtos.filter(produto => produto.descricao === PRODUTO_JAQUETA_DESTAQUE.descricao);
-    if (produtosJaqueta.length > 0) {
-        produtosJaqueta.forEach(produto => {
-            produto.descricao = PRODUTO_JAQUETA_DESTAQUE.descricao;
-            produto.preco = PRODUTO_JAQUETA_DESTAQUE.preco;
-            produto.medida = PRODUTO_JAQUETA_DESTAQUE.medida;
-            produto.imagem_url = PRODUTO_JAQUETA_DESTAQUE.imagem_url;
-            produto.destaque = true;
-        });
-        MockDB.salvarTabela('produtos', produtos);
+    const jaExisteJaqueta = produtos.some(produto => produto.descricao === PRODUTO_JAQUETA_DESTAQUE.descricao);
+    if (!jaExisteJaqueta) {
+        MockDB.inserir('produtos', { ...PRODUTO_JAQUETA_DESTAQUE });
     }
 
-    const destaquesAtivos = produtos.filter(produto => produto.destaque === true);
+    const jaExisteTenis = produtos.some(produto => produto.imagem_url === IMG_TENIS_BMW);
+    if (!jaExisteTenis) {
+        MockDB.inserir('produtos', { ...PRODUTO_TENIS_DESTAQUE });
+    }
+
+    const destaquesAtivos = MockDB.obterTabela('produtos').filter(produto => produto.destaque === true);
     if (destaquesAtivos.length === 0 && produtos.length > 0) {
-        produtos[0].destaque = true;
-        MockDB.salvarTabela('produtos', produtos);
+        const dadosAtualizados = MockDB.obterTabela('produtos');
+        dadosAtualizados[0].destaque = true;
+        MockDB.salvarTabela('produtos', dadosAtualizados);
     }
 }
 
