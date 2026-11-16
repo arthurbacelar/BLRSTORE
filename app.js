@@ -1,14 +1,16 @@
 
 const EMAIL_ADMIN = 'admin@loja.com'; // Credencial estática de administrador
 
+const PRODUTO_JAQUETA_DESTAQUE = {
+    descricao: 'Jaqueta Bmw Motorsport Mt7 Puma',
+    preco: 394.90,
+    medida: 'unidade',
+    imagem_url: './jaqueta.jpg',
+    destaque: true
+};
+
 const PRODUTOS_INICIAIS = [
-    {
-        descricao: 'Jaqueta Bmw Motorsport Mt7 Puma',
-        preco: 394.90,
-        medida: 'unidade',
-        imagem_url: './jaqueta.jpg',
-        destaque: true
-    },
+    { ...PRODUTO_JAQUETA_DESTAQUE },
     {
         descricao: 'Camisa básica',
         preco: 89.90,
@@ -70,6 +72,19 @@ function inicializarProdutosPadrao() {
     if (produtos.length === 0) {
         PRODUTOS_INICIAIS.forEach(produto => MockDB.inserir('produtos', produto));
         return;
+    }
+
+    const produtoDestaque = produtos[0];
+    if (produtoDestaque && (
+        produtoDestaque.descricao !== PRODUTO_JAQUETA_DESTAQUE.descricao ||
+        Number(produtoDestaque.preco) !== PRODUTO_JAQUETA_DESTAQUE.preco
+    )) {
+        produtos[0] = {
+            ...produtoDestaque,
+            ...PRODUTO_JAQUETA_DESTAQUE,
+            id: produtoDestaque.id || produtoDestaque._id
+        };
+        MockDB.salvarTabela('produtos', produtos);
     }
 
     const existeDestaque = produtos.some(produto => produto.destaque === true);
