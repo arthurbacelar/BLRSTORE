@@ -1,20 +1,22 @@
 
 const EMAIL_ADMIN = 'admin@loja.com'; // Credencial estática de administrador
 
-const IMG_TENIS_BMW = 'file:///C:/Users/CRC/AppData/Roaming/Code/agentSessionData/9277e50c-5919-4bb6-880c-967ef3d16831/attachments/a1c087cd-333b-4d08-b550-0fad9ed16a7c/Pasted%20Image.png';
+const IMG_TENIS_BMW = 'img/capro.jpg';
+const IMG_TENIS_BMW_LEGADO = 'file:///C:/Users/CRC/AppData/Roaming/Code/agentSessionData/9277e50c-5919-4bb6-880c-967ef3d16831/attachments/a1c087cd-333b-4d08-b550-0fad9ed16a7c/Pasted%20Image.png';
+const IMG_JAQUETA = 'img/jaqueta.jpg';
 
 const PRODUTO_JAQUETA_DESTAQUE = {
     descricao: 'Jaqueta Bmw Motorsport Mt7 Puma',
     preco: 394.90,
     medida: ['P', 'M', 'G', 'GG'],
-    imagem_url: './jaqueta.jpg',
+    imagem_url: IMG_JAQUETA,
     destaque: true
 };
 
 const PRODUTO_TENIS_DESTAQUE = {
     descricao: 'Tênis BMW Motorsport',
     preco: 799.99,
-    medida: 'par',
+    medida: ['38', '39', '40', '41'],
     imagem_url: IMG_TENIS_BMW,
     destaque: true
 };
@@ -26,21 +28,21 @@ const PRODUTOS_INICIAIS = [
         descricao: 'Camisa básica',
         preco: 89.90,
         medida: 'unidade',
-        imagem_url: './jaqueta.jpg',
+        imagem_url: IMG_JAQUETA,
         destaque: false
     },
     {
         descricao: 'Calça de moletom',
         preco: 149.90,
         medida: 'unidade',
-        imagem_url: './jaqueta.jpg',
+        imagem_url: IMG_JAQUETA,
         destaque: false
     },
     {
         descricao: 'Tênis esportivo',
         preco: 239.90,
         medida: 'par',
-        imagem_url: './jaqueta.jpg',
+        imagem_url: IMG_JAQUETA,
         destaque: false
     }
 ];
@@ -90,15 +92,19 @@ function inicializarProdutosPadrao() {
         MockDB.inserir('produtos', { ...PRODUTO_JAQUETA_DESTAQUE });
     }
 
-    const jaExisteTenis = produtos.some(produto => produto.imagem_url === IMG_TENIS_BMW);
+    const jaExisteTenis = produtos.some(produto => produto.descricao === PRODUTO_TENIS_DESTAQUE.descricao);
     if (!jaExisteTenis) {
         MockDB.inserir('produtos', { ...PRODUTO_TENIS_DESTAQUE });
     }
 
     produtos = MockDB.obterTabela('produtos');
     produtos.forEach(produto => {
+        produto.imagem_url = atualizarCaminhoImagem(produto.imagem_url);
         if (produto.descricao === PRODUTO_JAQUETA_DESTAQUE.descricao) {
             produto.medida = [...PRODUTO_JAQUETA_DESTAQUE.medida];
+        }
+        if (produto.descricao === PRODUTO_TENIS_DESTAQUE.descricao) {
+            produto.medida = [...PRODUTO_TENIS_DESTAQUE.medida];
         }
     });
 
@@ -108,6 +114,12 @@ function inicializarProdutosPadrao() {
     }
 
     MockDB.salvarTabela('produtos', produtos);
+}
+
+function atualizarCaminhoImagem(caminho) {
+    if (caminho === './jaqueta.jpg' || caminho === 'jaqueta.jpg') return IMG_JAQUETA;
+    if (caminho === IMG_TENIS_BMW_LEGADO) return IMG_TENIS_BMW;
+    return caminho;
 }
 
 // ==========================================
@@ -184,6 +196,11 @@ function adicionarAoCarrinho(id, descricao, preco, medida, imagem_url) {
 
 document.addEventListener('DOMContentLoaded', () => {
     inicializarProdutosPadrao();
+    carrinho = carrinho.map(item => ({
+        ...item,
+        imagem_url: atualizarCaminhoImagem(item.imagem_url)
+    }));
+    localStorage.setItem('carrinhoLoja', JSON.stringify(carrinho));
     verificarSessao();
     atualizarContadorCarrinho();
 });

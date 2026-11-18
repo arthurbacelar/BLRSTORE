@@ -3,13 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BCLR - Inicio</title>
+    <title>BL - Inicio</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
         <div class="header-container">
-            <h1>BCLR</h1>
+            <h1><img class="brand-logo" src="img/logo-bl.svg" alt="BL"></h1>
+            <form id="form-pesquisa" class="pesquisa-produtos" role="search">
+                <label class="sr-only" for="campo-pesquisa">Pesquisar produtos</label>
+                <input id="campo-pesquisa" type="search" placeholder="Pesquisar produtos" autocomplete="off">
+                <button type="submit" aria-label="Pesquisar">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="10.8" cy="10.8" r="6.8"></circle>
+                        <path d="M16 16l5 5"></path>
+                    </svg>
+                </button>
+            </form>
             <nav>
                 <a href="index.html">inicio</a>
                 <a href="sobre.html">Sobre</a>
@@ -22,14 +32,39 @@
         </div>
     </header>
 
-    <main>
-        <h2 style="margin-bottom: 1.5rem; text-align: center;">Destaques da Semana</h2>
-        <div id="product-grid" class="grid">
-            <p>Carregando produtos...</p>
-        </div>
+    <main class="home-main">
+        <section class="hero-banner" aria-labelledby="hero-title">
+            <div class="hero-content">
+                <p class="hero-eyebrow">BL · MODA CASUAL E ESPORTIVA</p>
+                <h2 id="hero-title">Vista seu estilo.<br>Viva o momento.</h2>
+                <p>Peças para acompanhar você em todos os momentos, com conforto e personalidade.</p>
+                <a class="hero-cta" href="#produtos">Explorar produtos <span aria-hidden="true">→</span></a>
+            </div>
+            <div class="hero-image">
+                <img src="img/jaqueta.jpg" alt="Jaqueta esportiva em destaque">
+            </div>
+        </section>
+
+        <section class="benefit-strip" aria-label="Vantagens da BL">
+            <p><span aria-hidden="true">01</span> Moda casual e esportiva</p>
+            <p><span aria-hidden="true">02</span> Tamanhos para escolher</p>
+            <p><span aria-hidden="true">03</span> Produtos selecionados</p>
+        </section>
+
+        <section id="produtos" class="product-section">
+            <div class="section-heading">
+                <div>
+                    <p class="section-eyebrow">SELEÇÃO BL</p>
+                    <h2>Destaques da semana</h2>
+                </div>
+            </div>
+            <div id="product-grid" class="grid">
+                <p>Carregando produtos...</p>
+            </div>
+        </section>
     </main>
 
-    <footer><p>&copy; 2026 Loja. Todos os direitos reservados.</p></footer>
+    <footer><p>&copy; 2026 BL. Todos os direitos reservados.</p></footer>
 
     <script src="app.js"></script>
     <script>
@@ -47,7 +82,7 @@
 
                 return `
                     <div class="card">
-                        <img class="${p.descricao === 'Tênis BMW Motorsport' ? 'imagem-completa' : ''}" src="${p.imagem_url}" alt="${p.descricao}" onerror="this.src='./jaqueta.jpg'">
+                        <img class="${p.descricao === 'Tênis BMW Motorsport' ? 'imagem-completa' : ''}" src="${p.imagem_url}" alt="${p.descricao}" onerror="this.src='img/jaqueta.jpg'">
                         <h2>${p.descricao}</h2>
                         ${Array.isArray(p.medida) ? `<p>Escolha o tamanho:</p>${opcoesTamanho}` : opcoesTamanho}
                         <div class="preco">R$ ${p.preco.toFixed(2)}</div>
@@ -71,7 +106,7 @@
             const opcaoSelecionada = seletor && seletor.querySelector('.botao-tamanho.selecionado');
 
             if (Array.isArray(produto.medida) && !opcaoSelecionada) {
-                alert('Escolha um tamanho para a jaqueta.');
+                alert('Escolha um tamanho antes de adicionar ao carrinho.');
                 return;
             }
 
@@ -81,12 +116,46 @@
 
         function carregarDestaques() {
             const grid = document.getElementById('product-grid');
+            const titulo = document.querySelector('.section-heading h2');
             // Simula: SELECT * FROM produtos WHERE destaque = true
             const dados = MockDB.selecionar('produtos', p => p.destaque === true);
+            titulo.textContent = 'Destaques da Semana';
             exibirProdutos(grid, dados, 'Nenhum produto em destaque ou banco de dados vazio.');
         }
 
-        document.addEventListener('DOMContentLoaded', carregarDestaques);
+        function pesquisarProdutos(termo) {
+            const grid = document.getElementById('product-grid');
+            const titulo = document.querySelector('.section-heading h2');
+            const texto = termo.trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+            if (!texto) {
+                carregarDestaques();
+                return;
+            }
+
+            const dados = MockDB.selecionar('produtos', produto => {
+                const descricao = produto.descricao.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+                const medida = formatarMedida(produto.medida).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+                return descricao.includes(texto) || medida.includes(texto);
+            });
+
+            titulo.textContent = `Resultados para "${termo.trim()}"`;
+            exibirProdutos(grid, dados, 'Nenhum produto encontrado.');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarDestaques();
+
+            const campo = document.getElementById('campo-pesquisa');
+            const formulario = document.getElementById('form-pesquisa');
+
+            formulario.addEventListener('submit', evento => {
+                evento.preventDefault();
+                pesquisarProdutos(campo.value);
+            });
+
+            campo.addEventListener('input', () => pesquisarProdutos(campo.value));
+        });
     </script>
 </body>
 </html>

@@ -12,7 +12,7 @@
 <body>
     <header>
         <div class="header-container">
-            <h1>BCLR</h1>
+            <h1><img class="brand-logo" src="img/logo-bl.svg" alt="BL"></h1>
             <nav>
                 <a href="index.html">Inicio</a>
                 <a href="sobre.html">Sobre</a>
@@ -51,7 +51,7 @@
                 return `
                     <div class="item-carrinho">
                         <div style="display: flex; gap: 15px; align-items: center;">
-                            <img src="${item.imagem_url}" onerror="this.src='./jaqueta.jpg'">
+                            <img src="${item.imagem_url}" onerror="this.src='img/jaqueta.jpg'">
                             <div>
                                 <h3>${item.descricao}</h3>
                                 <p>Qtd: ${item.quantidade}</p>
